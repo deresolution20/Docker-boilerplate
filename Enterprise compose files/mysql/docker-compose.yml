@@ -7,11 +7,21 @@ services:
       - "3000:3000"
     depends_on:
       - mysql
+      - renderer
     volumes:
       - grafana_data:/var/lib/grafana
+      - ./grafana.ini:/etc/grafana/grafana.ini
     environment:
       GF_SECURITY_ADMIN_PASSWORD: admin
       GF_LOG_LEVEL: debug
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml 
+      - prometheus_data:/prometheus
 
   mysql:
     image: mysql:5.7  # Using MySQL 5.7 as an example
@@ -25,7 +35,15 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
 
+  renderer:
+    image: grafana/grafana-image-renderer:latest
+    environment:
+      - HOST=0.0.0.0
+    ports:
+      - "8081:8081"
+
 volumes:
   grafana_data:
   mysql_data:
+  prometheus_data:
 
