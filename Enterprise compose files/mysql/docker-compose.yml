@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  grafana:
+    image: grafana/grafana-enterprise:10.1.2  # Match the customer's Grafana version
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_LOG_LEVEL: debug
+
+  mysql:
+    image: mysql:5.7  # Using MySQL 5.7 as an example
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: test_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  grafana_data:
+  mysql_data:
+

@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  grafana:
+    image: grafana/grafana-enterprise:10.1.1
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - renderer
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana.ini:/etc/grafana/grafana.ini  
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_LOG_LEVEL: debug
+      GF_RENDERING_SERVER_URL: http://renderer:8081/render
+      GF_RENDERING_CALLBACK_URL: http://grafana:3000/
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: test_db
+      POSTGRES_USER: user
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  renderer:
+    image: grafana/grafana-image-renderer:latest
+    environment:
+      - HOST=0.0.0.0
+    ports:
+      - "8081:8081"
+
+volumes:
+  grafana_data:
+  postgres_data:
